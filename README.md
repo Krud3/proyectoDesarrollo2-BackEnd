@@ -1,51 +1,62 @@
-# Mi Proyecto Genial
+# README
 
-¡Bienvenido/a a mi proyecto genial! Este es un breve resumen de lo que encontrarás aquí y cómo puedes comenzar a utilizarlo.
+**Art Auction System Backend - Software Development 2, Universidad del Valle**
 
-## Descripción
+This repository contains the backend of an art auction application, developed as a project for the Software Development 2 course at the Universidad del Valle. The project focuses on integrating DevOps practices throughout the software development lifecycle, using Django as the primary framework.
 
-Este proyecto es una aplicación web desarrollada con [tecnología X](#), diseñada para [propósito Y](#). Hemos creado esta herramienta con el objetivo de [objetivo Z](#).
+## Description
 
-## Funcionalidades principales
+The art auction system allows users to create, list, and bid on art piece auctions. This backend manages all the business logic, database interactions, and user authentication and authorization, providing a RESTful API to be consumed by the frontend.
 
-- Funcionalidad 1: Describe brevemente la funcionalidad principal de tu proyecto.
-- Funcionalidad 2: Aquí puedes mencionar otra característica importante.
-- Funcionalidad 3: Y otra más...
+## Features
 
-## Cómo empezar
+- **Auction Management:** Creation and listing of auctions, with details such as title, description, image, starting price, and closing time.
+- **Bid Management:** Users can place bids on active auctions, with validations to ensure bids exceed the current highest offer.
+- **Authentication and Authorization:** User management, registration, login, and permissions for different roles within the application.
+- **RESTful API:** A clear and well-structured interface for interaction with the frontend and possibly third parties.
 
-1. Clona este repositorio en tu máquina local utilizando el siguiente comando:
-    ```
-    git clone https://github.com/tu_usuario/tu_proyecto.git
-    ```
+## Technologies Used
 
-2. Instala las dependencias necesarias. Puedes hacerlo ejecutando:
-    ```
-    npm install
-    ```
+- Django: The main framework for backend development.
+- Django REST Framework: Facilitates the creation of a RESTful API.
+- PostgreSQL: Database used for development and local testing.
+- Docker: For containerizing the application and its environment.
+- GitHub Actions: For continuous integration and deployment (CI/CD).
+- Other DevOps Tools: Heroku, Prometheus, Selenium, Google Forms.
 
-3. Configura el archivo de entorno `.env` con las variables necesarias. Puedes encontrar un ejemplo en `.env.example`.
+## Configuration and Deployment
 
-4. Inicia la aplicación con el siguiente comando:
-    ```
-    npm start
-    ```
+**Local Setup:**
 
-5. ¡Explora y disfruta de nuestro proyecto!
+1. Clone the repository.
+2. Install dependencies with `pip install -r requirements.txt`.
+3. Perform migrations with `python manage.py migrate`.
+4. Start the development server with `python manage.py runserver`.
 
-## Contribución
+**Containerization with Docker:**
 
-¡Nos encantaría recibir tus contribuciones para hacer de este proyecto algo aún mejor! Si deseas contribuir, sigue estos pasos:
+- Build the image with `docker build -t image_name ..`.
+- Launch the services with `docker-compose up`.
 
-1. Realiza un fork del repositorio.
-2. Crea una nueva rama para tu función o corrección: `git checkout -b mi-caracteristica`.
-3. Realiza tus cambios y haz commits descriptivos: `git commit -m 'Agrega una nueva característica'`.
-4. Sube tus cambios a tu repositorio fork: `git push origin mi-caracteristica`.
-5. Envía un Pull Request indicando las modificaciones realizadas.
+**CI/CD with GitHub Actions:**
 
-## Contacto
+- CI/CD configurations are defined in `.github/workflows`.
+- Each push or pull request to the repository will trigger the continuous integration and deployment pipeline.
 
-Si tienes preguntas, sugerencias o simplemente deseas ponerte en contacto con el equipo de desarrollo, no dudes en escribirnos a [correo@example.com](mailto:correo@example.com).
+## Contributing
 
-¡Gracias por utilizar nuestro proyecto! Esperamos que te sea útil y que disfrutes usándolo tanto como nosotros disfrutamos creándolo.
+To contribute to the project, please follow the "fork-and-pull" workflow:
+
+1. Fork the repository.
+2. Create a branch for your feature or correction.
+3. Make changes in your branch.
+4. Submit a pull request for your changes to be integrated into the main repository.
+
+## License
+
+This project is under the MIT License. See the `LICENSE` file for more details.
+
+---
+
+**Universidad del Valle - Faculty of Engineering - Software Development 2**
 

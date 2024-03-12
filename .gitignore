@@ -1,0 +1,16 @@
+# Virtual environment
+venv/
+
+# Visual Studio Code
+.vscode/
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+
+# Django Rest Framework
+*.sqlite3
+*.pyc

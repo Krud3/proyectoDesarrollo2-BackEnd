@@ -3,7 +3,7 @@ ASGI config for auction_project project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
-For more information on this file, see
+For more information 
 https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 """
 

@@ -3,7 +3,7 @@
 **Art Auction System Backend - Software Development 2, Universidad del Valle**
 
 This repository contains the backend of an art auction application, developed as a project for the Software Development 2 course at the Universidad del Valle. The project focuses on integrating DevOps practices throughout the software development lifecycle, using Django as the primary framework.
-
+TESTEANDO
 ## Description
 
 The art auction system allows users to create, list, and bid on art piece auctions. This backend manages all the business logic, database interactions, and user authentication and authorization, providing a RESTful API to be consumed by the frontend.

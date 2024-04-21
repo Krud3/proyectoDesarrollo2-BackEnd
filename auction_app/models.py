@@ -3,13 +3,14 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.contrib.auth.hashers import make_password
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser
 
 class Auction(models.Model):
     auction_id = models.AutoField(primary_key=True)
-    auction_name = models.CharField(max_length=255, verbose_name=_("Nombre de la subasta"))
+    auction_name = models.CharField(max_length=255, verbose_name=_("Auction Name"))
     auction_description = models.TextField()
     start_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateTimeField(null=True)  # Permitir valores nulos
+    end_date = models.DateTimeField(null=True)  # Allow null values
     status = models.CharField(max_length=20, choices=(('active', _('Active')), ('inactive', _('Inactive'))), default='active')
 
     class Meta:
@@ -25,7 +26,7 @@ class Auction(models.Model):
     def clean(self):
         super().clean()
         if self.end_date and self.start_date and self.end_date <= self.start_date:
-            raise ValidationError(_("La fecha de finalización debe ser posterior a la fecha de inicio."))
+            raise ValidationError(_("The end date must be after the start date."))
 
 class Artwork(models.Model):
     artwork_id = models.AutoField(primary_key=True)
@@ -37,7 +38,7 @@ class Artwork(models.Model):
     material = models.CharField(max_length=100)
     genre = models.CharField(max_length=100)
     description = models.TextField()
-    minimum_bid = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)])
+    minimum_bid = models.DecimalField(max_digits=10, decimal_places=2, default=0.01, validators=[MinValueValidator(0.01)])
     status = models.CharField(max_length=20, choices=(('active', _('Active')), ('inactive', _('Inactive'))), default='active')
 
     class Meta:
@@ -45,6 +46,7 @@ class Artwork(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class Customer(models.Model):
     customer_id = models.AutoField(primary_key=True)
@@ -70,7 +72,7 @@ class Bid(models.Model):
 
     class Meta:
         db_table = 'bids'
-
+  
     def __str__(self):
         return f"Bid #{self.bid_id} - {self.customer.full_name} - {self.artwork.title}"
 
@@ -84,6 +86,9 @@ class Admin(models.Model):
 
     def __str__(self):
         return self.email
+    
+    class Admin(AbstractUser):
+       admin_id = models.AutoField(primary_key=True)
 
     def save(self, *args, **kwargs):
         self.password = make_password(self.password)

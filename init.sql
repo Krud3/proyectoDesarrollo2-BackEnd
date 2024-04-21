@@ -57,8 +57,8 @@ CREATE TABLE Admins (
     UNIQUE (admin_id)
 );
 
--- Llenar la tabla Auctions con datos de ejemplo
-INSERT INTO Auctions (auction_name, auction_description, start_date, end_date, status)
+-- Llenar la tabla Auction con datos de ejemplo
+INSERT INTO auctions (auction_name, auction_description, start_date, end_date, status)
 VALUES
     ('Subasta de Primavera', 'Subasta de obras de arte contemporáneo', '2024-03-15', '2024-04-30', 'active'),
     ('Subasta de Verano', 'Subasta de obras de arte moderno', '2024-06-01', '2024-07-31', 'active'),
@@ -71,8 +71,8 @@ VALUES
     ('Subasta de Clásicos Modernos', 'Subasta de obras maestras modernas', '2024-06-01', '2024-06-30', 'active'),
     ('Subasta de Arte Oriental', 'Subasta de arte oriental antiguo y contemporáneo', '2024-09-01', '2024-09-30', 'active');
 
--- Llenar la tabla Artworks con datos de ejemplo
-INSERT INTO Artworks (auction_id, title, artist, year_created, dimensions, material, genre, description, minimum_bid, status)
+-- Llenar la tabla Artwork con datos de ejemplo
+INSERT INTO artworks (auction_id, title, artist, year_created, dimensions, material, genre, description, minimum_bid, status)
 VALUES
     (1, 'Paisaje en Primavera', 'Juan Pérez', 2005, '80 cm × 60 cm', 'Óleo sobre lienzo', 'Paisaje', 'Hermoso paisaje primaveral con árboles en flor', 1000.00, 'active'),
     (1, 'Retrato de una Dama', 'María García', 1990, '50 cm × 40 cm', 'Acuarela sobre papel', 'Retrato', 'Retrato de una dama con vestido rojo', 800.00, 'active'),
@@ -91,7 +91,7 @@ VALUES
     (10, 'Buda Sentado', 'Anonymus', 600, '78 cm × 47 cm × 32 cm', 'Mármol', 'Arte Budista', 'Escultura antigua de Buda en posición de meditación', 500000.00, 'active');
 
 -- Llenar la tabla Customers con datos de ejemplo
-INSERT INTO Customers (full_name, email, phone, document_type, document_number)
+INSERT INTO customers (full_name, email, phone, document_type, document_number)
 VALUES
     ('Roberto Sánchez', 'roberto@example.com', '123456789', 'DNI', '12345678A'),
     ('Laura López', 'laura@example.com', '987654321', 'DNI', '87654321B'),
@@ -105,7 +105,7 @@ VALUES
     ('Lucía Hernández', 'lucia@example.com', '999000111', 'NIE', 'EFG123456');
 
 -- Llenar la tabla Bids con datos de ejemplo
-INSERT INTO Bids (auction_id, artwork_id, customer_id, bid_value, bid_timestamp)
+INSERT INTO bids (auction_id, artwork_id, customer_id, bid_value, bid_timestamp)
 VALUES
     (1, 1, 1, 1200.00, '2024-03-18 10:00:00'),
     (1, 2, 2, 1000.00, '2024-03-18 11:00:00'),
@@ -119,7 +119,7 @@ VALUES
     (9, 11, 9, 2000000.00, '2024-03-18 19:00:00');
 
 -- Llenar la tabla Admins con datos de ejemplo
-INSERT INTO Admins (email, password)
+INSERT INTO admins (email, password)
 VALUES 
     ('admin1@example.com', 'password1'),
     ('admin2@example.com', 'password2'),
@@ -132,9 +132,6 @@ VALUES
     ('admin9@example.com', 'password9'),
     ('admin10@example.com', 'password10');
 
-
-
--- Llenar la tabla Auctions con datos de ejemplo
 
 -- Ver los datos de la tabla Auctions
 SELECT * FROM Auctions;

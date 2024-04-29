@@ -1,5 +1,5 @@
 # Usa una imagen base de Python
-FROM python:3.9
+FROM python:3.9-alpine3.17
 
 # Configura variables de entorno para Python
 ENV PYTHONDONTWRITEBYTECODE 1

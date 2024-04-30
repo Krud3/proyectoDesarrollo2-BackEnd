@@ -60,3 +60,15 @@ This project is under the MIT License. See the `LICENSE` file for more details.
 
 **Universidad del Valle - Faculty of Engineering - Software Development 2**
 
+---
+
+DockerHub: https://hub.docker.com/u/ervincaravaliibarra
+
+Para crear la red en docker: docker network create mi-red
+
+Para configurar la base de datos: docker run -p 5433:5432 --name db --network mi-red ervincaravaliibarra/bdgaleria-6:latest
+
+Para configurar la back app:  docker run -p 8000:8000 --name web --network mi-red ervincaravaliibarra/galeria-6:latest
+    Para hacer las migraciones: docker exec -it web sh
+              Luego: python manage.py migrate
+Despues de todo deberia de correr en el http://localhost:8000/auction_app/v1/ o en http://0.0.0.0:8000/auction_app/v1/ 

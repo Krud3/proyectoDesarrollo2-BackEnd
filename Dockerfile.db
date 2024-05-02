@@ -2,7 +2,12 @@
 
 FROM postgres:16-alpine3.17
 
-# Establecer variables de entorno para la base de dato
-ENV POSTGRES_DB=projecto
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=Ec94
+# Copiar las variables de entorno definidas en el archivo .env
+ARG POSTGRES_DB
+ARG POSTGRES_USER
+ARG POSTGRES_PASSWORD
+
+# Establecer variables de entorno para la base de datos
+ENV POSTGRES_DB $POSTGRES_DB
+ENV POSTGRES_USER $POSTGRES_USER
+ENV POSTGRES_PASSWORD $POSTGRES_PASSWORD

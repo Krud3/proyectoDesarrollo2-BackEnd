@@ -88,5 +88,8 @@ class Admin(models.Model):
         return self.email
 
     def save(self, *args, **kwargs):
-        self.password = make_password(self.password)
+        # Verificar si la instancia es nueva o si la contraseña ha sido modificada
+        if not self.pk or self._state.adding or 'password' in self._get_changed_fields():
+            # Aplicar make_password solo si es necesario
+            self.password = make_password(self.password)
         super().save(*args, **kwargs)

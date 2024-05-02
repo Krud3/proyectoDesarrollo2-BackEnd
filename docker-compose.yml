@@ -15,10 +15,10 @@ services:
     depends_on:
       - db
     environment:
-      - DB_HOST=db
-      - DB_NAME=projecto
-      - DB_USER=postgres
-      - DB_PASSWORD=Ec94
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     stdin_open: true
     tty: true
 
@@ -28,9 +28,9 @@ services:
       dockerfile: Dockerfile.db
     image: ervincaravaliibarra/bdgaleria-6:latest
     environment:
-      - POSTGRES_DB=projecto
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=Ec94
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
@@ -42,8 +42,8 @@ services:
       dockerfile: Dockerfile.pgadmin
     image: ervincaravaliibarra/pgadmin-galeria-6:latest
     environment:
-      PGADMIN_DEFAULT_EMAIL: ervin.caravali@correounivalle.edu.co
-      PGADMIN_DEFAULT_PASSWORD: Ec94
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "90:80"
     depends_on:

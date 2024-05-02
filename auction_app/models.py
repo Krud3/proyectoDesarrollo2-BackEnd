@@ -3,13 +3,14 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.contrib.auth.hashers import make_password
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 class Auction(models.Model):
     auction_id = models.AutoField(primary_key=True)
     auction_name = models.CharField(max_length=255, verbose_name=_("Nombre de la subasta"))
     auction_description = models.TextField()
     start_date = models.DateTimeField(null=False, blank=False)
-    end_date = models.DateTimeField(null=False ,  blank=False )  # Permitir valores nulos
+    end_date = models.DateTimeField(null=False, blank=False, default=timezone.now)
     status = models.CharField(max_length=20, choices=(('active', _('Active')), ('inactive', _('Inactive'))), default='active')
 
     class Meta:
@@ -51,8 +52,8 @@ class Customer(models.Model):
     full_name = models.CharField(max_length=255)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
-    document_type = models.CharField(max_length=50, blank=False, null=False)
-    document_number = models.CharField(max_length=50, blank=False, null=False)
+    document_type = models.CharField(max_length=50, blank=False, null=False, default='ID')
+    document_number = models.CharField(max_length=50, blank=False, null=False, default='')
 
     class Meta:
         db_table = 'customers'
@@ -76,8 +77,9 @@ class Bid(models.Model):
 
 class Admin(models.Model):
     admin_id = models.AutoField(primary_key=True)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
+    is_admin = models.BooleanField(default=False)  # Campo para indicar si el usuario es administrador
 
     class Meta:
         db_table = 'admins'

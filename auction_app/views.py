@@ -1,58 +1,83 @@
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import viewsets
 from .serializer import AuctionSerializer, ArtworkSerializer, CustomerSerializer, BidSerializer, AdminSerializer
 from .models import Auction, Artwork, Customer, Bid, Admin
 from rest_framework.response import Response
 from rest_framework import status
 
-class CustomModelViewSet(viewsets.ModelViewSet):
-    def perform_create(self, serializer):
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
+class PermissionMixin:
+    def get_permissions(self):
+        if self.request.user.is_superuser:
+            return [IsAuthenticated(), IsAdminUser()]  # Los superusuarios pueden hacer cualquier cosa
+        else:
+            return [IsAdminUser()] 
 
-    def perform_update(self, serializer):
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
-
-    def perform_destroy(self, instance):
-        if hasattr(instance, 'bid_set') and instance.bid_set.exists():
-            return Response("No se puede eliminar este objeto porque tiene ofertas asociadas.", status=status.HTTP_400_BAD_REQUEST)
-        
-        if hasattr(instance, 'artwork_set') and instance.artwork_set.exists():
-            return Response("No se puede eliminar este objeto porque tiene obras de arte asociadas.", status=status.HTTP_400_BAD_REQUEST)
-        
-        if hasattr(instance, 'admin_set') and instance.admin_set.exists():
-            return Response("No se puede eliminar este objeto porque tiene administradores asociados.", status=status.HTTP_400_BAD_REQUEST)
-
-        if hasattr(instance, 'bid_set') and instance.bid_set.exists():
-            return Response("No se puede eliminar este objeto porque tiene ofertas asociadas.", status=status.HTTP_400_BAD_REQUEST)
-
-        instance.delete()
-
-class AuctionViewSet(CustomModelViewSet):
+class AuctionViewSet(PermissionMixin, viewsets.ModelViewSet):
     queryset = Auction.objects.all()
     serializer_class = AuctionSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-
-class ArtworkViewSet(CustomModelViewSet):
+    
+class ArtworkViewSet(PermissionMixin, viewsets.ModelViewSet):
     queryset = Artwork.objects.all()
     serializer_class = ArtworkSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-
-class CustomerViewSet(CustomModelViewSet):
+    
+class CustomerViewSet(PermissionMixin, viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
-class BidViewSet(CustomModelViewSet):
+    def get_permissions(self):
+        permissions = super().get_permissions()
+        if self.action == 'create':
+            permissions.append(IsAuthenticated())  # Usuarios normales solo pueden crear nuevos registros
+        return permissions
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Customer.objects.all()  # Los superusuarios pueden ver todos los registros
+        return Customer.objects.filter(owner=self.request.user)
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.owner != request.user:
+            return Response({'error': 'You do not have permission to update this customer.'}, status=status.HTTP_403_FORBIDDEN)
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.owner != request.user:
+            return Response({'error': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
+
+class BidViewSet(PermissionMixin, viewsets.ModelViewSet):
     queryset = Bid.objects.all()
     serializer_class = BidSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
-class AdminViewSet(CustomModelViewSet):
+    def get_permissions(self):
+        permissions = super().get_permissions()
+        if self.action == 'update':
+            permissions.append(IsAuthenticated())  # Usuarios normales solo pueden actualizar el campo bid_value
+        return permissions
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Bid.objects.all()  # Los superusuarios pueden ver todos los registros
+        return Bid.objects.filter(owner=self.request.user)
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.owner != request.user:
+            return Response({'error': 'You do not have permission to update this bid.'}, status=status.HTTP_403_FORBIDDEN)
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.owner != request.user:
+            return Response({'error': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
+
+class AdminViewSet(PermissionMixin, viewsets.ModelViewSet):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-    
-    

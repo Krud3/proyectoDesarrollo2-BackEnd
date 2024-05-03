@@ -5,79 +5,85 @@ from .serializer import AuctionSerializer, ArtworkSerializer, CustomerSerializer
 from .models import Auction, Artwork, Customer, Bid, Admin
 from rest_framework.response import Response
 from rest_framework import status
+from functools import partial
 
-class PermissionMixin:
+class BasePermissionViewSet(viewsets.ModelViewSet):
+    permission_classes_by_action = {}
+
     def get_permissions(self):
-        if self.request.user.is_superuser:
-            return [IsAuthenticated(), IsAdminUser()]  # Los superusuarios pueden hacer cualquier cosa
-        else:
-            return [IsAdminUser()] 
+        try:
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError:
+            return [permission() for permission in self.permission_classes]
 
-class AuctionViewSet(PermissionMixin, viewsets.ModelViewSet):
+    def handle_action(self, request, *args, **kwargs):
+        action_handler = getattr(self, f'handle_{self.action}', None)
+        if action_handler is not None:
+            return action_handler(request, *args, **kwargs)
+        return super().handle_action(request, *args, **kwargs)
+
+class AuctionViewSet(BasePermissionViewSet):
     queryset = Auction.objects.all()
     serializer_class = AuctionSerializer
-    
-class ArtworkViewSet(PermissionMixin, viewsets.ModelViewSet):
-    queryset = Artwork.objects.all()
-    serializer_class = ArtworkSerializer
-    
-class CustomerViewSet(PermissionMixin, viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
-
-    def get_permissions(self):
-        permissions = super().get_permissions()
-        if self.action == 'create':
-            permissions.append(IsAuthenticated())  # Usuarios normales solo pueden crear nuevos registros
-        return permissions
+    permission_classes = [IsAuthenticated]
+    permission_classes_by_action = {
+        'create': [IsAuthenticated],
+        'update': [IsAuthenticated, IsAdminUser],
+        'destroy': [IsAuthenticated, IsAdminUser]
+    }
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return Customer.objects.all()  # Los superusuarios pueden ver todos los registros
-        return Customer.objects.filter(owner=self.request.user)
+class ArtworkViewSet(BasePermissionViewSet):
+    queryset = Artwork.objects.all()
+    serializer_class = ArtworkSerializer
+    permission_classes = [IsAuthenticated]
+    permission_classes_by_action = {
+        'create': [IsAuthenticated],
+        'update': [IsAuthenticated, IsAdminUser],
+        'destroy': [IsAuthenticated, IsAdminUser]
+    }
 
-    def partial_update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.owner != request.user:
-            return Response({'error': 'You do not have permission to update this customer.'}, status=status.HTTP_403_FORBIDDEN)
-        return super().partial_update(request, *args, **kwargs)
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.owner != request.user:
-            return Response({'error': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
-        return super().destroy(request, *args, **kwargs)
+class CustomerViewSet(BasePermissionViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    permission_classes = [IsAuthenticated]
+    permission_classes_by_action = {
+        'create': [IsAuthenticated],
+        'update': [IsAuthenticated, partial(IsAdminUser) or partial(is_owner)],
+        'destroy': [IsAuthenticated, partial(IsAdminUser) or partial(is_owner)]
+    }
 
-class BidViewSet(PermissionMixin, viewsets.ModelViewSet):
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+class BidViewSet(BasePermissionViewSet):
     queryset = Bid.objects.all()
     serializer_class = BidSerializer
+    permission_classes = [IsAuthenticated]
+    permission_classes_by_action = {
+        'create': [IsAuthenticated],
+        'update': [IsAuthenticated, partial(IsAdminUser) or partial(is_owner)],
+        'destroy': [IsAuthenticated, partial(IsAdminUser) or partial(is_owner)]
+    }
 
-    def get_permissions(self):
-        permissions = super().get_permissions()
-        if self.action == 'update':
-            permissions.append(IsAuthenticated())  # Usuarios normales solo pueden actualizar el campo bid_value
-        return permissions
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return Bid.objects.all()  # Los superusuarios pueden ver todos los registros
-        return Bid.objects.filter(owner=self.request.user)
+# Define la función is_owner
+def is_owner(request, obj):
+    return obj.owner == request.user
 
-    def partial_update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.owner != request.user:
-            return Response({'error': 'You do not have permission to update this bid.'}, status=status.HTTP_403_FORBIDDEN)
-        return super().partial_update(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.owner != request.user:
-            return Response({'error': 'You do not have permission to perform this action.'}, status=status.HTTP_403_FORBIDDEN)
-        return super().destroy(request, *args, **kwargs)
-
-class AdminViewSet(PermissionMixin, viewsets.ModelViewSet):
+class AdminViewSet(BasePermissionViewSet):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
+    permission_classes = [IsAdminUser]
+    permission_classes_by_action = {
+        'create': [IsAdminUser],
+        'update': [IsAdminUser],
+        'destroy': [IsAdminUser]
+    }

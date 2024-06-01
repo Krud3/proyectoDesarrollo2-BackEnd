@@ -1,20 +1,26 @@
-from django.urls import path, include  # Corregir la importación
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from . import views
+from django.contrib import admin
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
-from rest_framework import routers
-from auction_app import views
-
-router = routers.DefaultRouter()
-router.register(r'Auction', views.AuctionViewSet)
-router.register(r'Artwork', views.ArtworkViewSet)
-router.register(r'Customer', views.CustomerViewSet)
-router.register(r'Bid', views.BidViewSet)
-router.register(r'Admin', views.AdminViewSet)
-
+router = DefaultRouter()
+router.register(r'auctions', views.AuctionViewSet)
+router.register(r'artworks', views.ArtworkViewSet)
+router.register(r'customers', views.CustomerViewSet)
+router.register(r'bids', views.BidViewSet)
+router.register(r'admins', views.AdminViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
-]
-
+    path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
+    
+]
 
 

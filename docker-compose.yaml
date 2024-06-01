@@ -40,8 +40,27 @@ services:
     networks:
       - backend
 
+  tests:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "sleep 10 && coverage run manage.py test && coverage xml"
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - backend
+
 volumes:
   db_data_volume:
 
 networks:
   backend:
+
+

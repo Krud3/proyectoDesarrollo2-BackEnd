@@ -1,0 +1,35 @@
+name: Deploy to Kubernetes
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v1
+      with:
+        version: v1.20.0  
+
+    - name: Authenticate to Kubernetes cluster
+      run: |
+        echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > $HOME/.kube/config
+
+    - name: Apply DB ConfigMap
+      run: kubectl apply -f configmap.yaml
+
+    - name: Apply DB Deployment
+      run: kubectl apply -f db-deployment.yaml
+
+    - name: Apply Web Deployment
+      run: kubectl apply -f web-deployment.yaml
+
+    - name: Apply Web Service
+      run: kubectl apply -f web-service.yaml

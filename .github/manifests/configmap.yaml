@@ -18,3 +18,4 @@ data:
   DB_USER: postgres
   DB_PASSWORD: Ec94
   DB_PORT: "5432"
+

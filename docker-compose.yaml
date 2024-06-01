@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: ervincaravaliibarra/galeria-20:latest
+    restart: always
+    command: sh -c "sleep 10 && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    stdin_open: true
+    tty: true
+    networks:
+      - backend
+
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    image: ervincaravaliibarra/bdgaleria-20:latest
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data_volume:/var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  db_data_volume:
+
+networks:
+  backend:

@@ -1,8 +1,0 @@
-# Usa la imagen base de pgAdmin 4
-FROM dpage/pgadmin4:6.2
-
-# Copia el archivo .env al contenedor y carga las variables de entorno
-COPY .env /usr/src/app/.env
-
-
-

@@ -1,0 +1,9 @@
+# Ignorar archivos y directorios innecesarios
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.git
+.gitignore
+.DS_Store
+node_modules/

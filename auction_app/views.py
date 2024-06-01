@@ -1,58 +1,40 @@
 from rest_framework import viewsets
-from .serializer import AuctionSerializer, ArtworkSerializer, CustomerSerializer, BidSerializer, AdminSerializer
+from rest_framework.permissions import IsAuthenticated
 from .models import Auction, Artwork, Customer, Bid, Admin
-from rest_framework.response import Response
-from rest_framework import status
+from .serializers import AuctionSerializer, ArtworkSerializer, CustomerSerializer, BidSerializer, AdminSerializer
+from .permissions import IsAdminUser, IsCustomerOrReadOnly
 
-class CustomModelViewSet(viewsets.ModelViewSet):
-    def perform_create(self, serializer):
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
-
-    def perform_update(self, serializer):
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
-
-    def perform_destroy(self, instance):
-        if hasattr(instance, 'bid_set') and instance.bid_set.exists():
-            return Response("No se puede eliminar este objeto porque tiene ofertas asociadas.", status=status.HTTP_400_BAD_REQUEST)
-        
-        if hasattr(instance, 'artwork_set') and instance.artwork_set.exists():
-            return Response("No se puede eliminar este objeto porque tiene obras de arte asociadas.", status=status.HTTP_400_BAD_REQUEST)
-        
-        if hasattr(instance, 'admin_set') and instance.admin_set.exists():
-            return Response("No se puede eliminar este objeto porque tiene administradores asociados.", status=status.HTTP_400_BAD_REQUEST)
-
-        if hasattr(instance, 'bid_set') and instance.bid_set.exists():
-            return Response("No se puede eliminar este objeto porque tiene ofertas asociadas.", status=status.HTTP_400_BAD_REQUEST)
-
-        instance.delete()
-
-class AuctionViewSet(CustomModelViewSet):
+class AuctionViewSet(viewsets.ModelViewSet):
     queryset = Auction.objects.all()
     serializer_class = AuctionSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    permission_classes = [IsAdminUser]
 
-class ArtworkViewSet(CustomModelViewSet):
+class ArtworkViewSet(viewsets.ModelViewSet):
     queryset = Artwork.objects.all()
     serializer_class = ArtworkSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    permission_classes = [IsAdminUser]
 
-class CustomerViewSet(CustomModelViewSet):
+class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    permission_classes = [IsAuthenticated, IsCustomerOrReadOnly]
 
-class BidViewSet(CustomModelViewSet):
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Customer.objects.all()
+        return Customer.objects.filter(id=self.request.user.id)
+
+class BidViewSet(viewsets.ModelViewSet):
     queryset = Bid.objects.all()
     serializer_class = BidSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    permission_classes = [IsAuthenticated, IsCustomerOrReadOnly]
 
-class AdminViewSet(CustomModelViewSet):
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Bid.objects.all()
+        return Bid.objects.filter(customer=self.request.user)
+
+class AdminViewSet(viewsets.ModelViewSet):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-    
-    
+    permission_classes = [IsAdminUser]

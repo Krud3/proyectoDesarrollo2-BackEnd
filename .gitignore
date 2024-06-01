@@ -1,6 +1,6 @@
 # Virtual environment
-venv/
-venv/Include
+env/
+env/Include
 
 # Visual Studio Code
 .vscode/

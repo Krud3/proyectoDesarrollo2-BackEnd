@@ -9,7 +9,7 @@ class Auction(models.Model):
     auction_name = models.CharField(max_length=255, verbose_name=_("Nombre de la subasta"))
     auction_description = models.TextField()
     start_date = models.DateTimeField(null=False, blank=False)
-    end_date = models.DateTimeField(null=False ,  blank=False )  # Permitir valores nulos
+    end_date = models.DateTimeField(null=False ,  blank=False )  # Permitir valores 
     status = models.CharField(max_length=20, choices=(('active', _('Active')), ('inactive', _('Inactive'))), default='active')
 
     class Meta:

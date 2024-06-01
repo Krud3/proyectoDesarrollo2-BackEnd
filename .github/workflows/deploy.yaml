@@ -22,10 +22,8 @@ jobs:
       env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       run: |
+        mkdir -p $HOME/.kube
         echo $KUBE_CONFIG | base64 --decode > $HOME/.kube/config
-
-    - name: Print KUBE_CONFIG
-      run: echo $KUBE_CONFIG
 
     - name: Apply DB ConfigMap
       run: kubectl apply -f configmap.yaml

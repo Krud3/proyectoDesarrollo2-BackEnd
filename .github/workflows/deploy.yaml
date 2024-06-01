@@ -18,12 +18,10 @@ jobs:
       with:
         version: v1.20.0  
 
-    - name: Authenticate to Kubernetes cluster
-      env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+    - name: Configure kubectl
       run: |
         mkdir -p $HOME/.kube
-        echo $KUBE_CONFIG | base64 --decode > $HOME/.kube/config
+        echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
 
     - name: Apply DB ConfigMap
       run: kubectl apply -f configmap.yaml

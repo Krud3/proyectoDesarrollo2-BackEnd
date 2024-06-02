@@ -20,21 +20,21 @@ jobs:
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
-          minikube_version: 'v1.33.0'
-          kubernetes_version: 'v1.30.0'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          minikube version: 'v1.33.0'
+          kubernetes version: 'v1.30.0'
+          github token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Interact with the cluster
+        run: kubectl get nodes
 
       - name: Deploy to Kubernetes
         run: |
           kubectl create namespace backend
-          kubectl label namespace backend istio-injection=enabled
-          kubectl apply -f db-deployment.yaml -n backend
-          kubectl apply -f web-deployment.yaml -n backend
-          kubectl apply -f configmap.yaml -n backend
-          kubectl apply -f web-service.yaml -n backend
-
-      - name: Get all resources in backend namespace
-        run: kubectl get all -n backend
+          kubectl apply -f .github/manifests/db-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/web-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/configmap.yaml -n backend
+          kubectl apply -f .github/manifests/web-service.yaml -n backend
+          kubectl get all -n backend
 
       - name: Get events in backend namespace
         run: kubectl get events -n backend

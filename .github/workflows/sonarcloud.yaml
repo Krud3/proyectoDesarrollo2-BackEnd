@@ -43,4 +43,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: false
-          tags: ErvinCaraval/proyectoDesarrollo2-BackEnd:${{ github.sha }}
+          tags: ervincaravaliibarra/ervincaraval-proyectodesarrollo2-backend:${{ github.sha }}

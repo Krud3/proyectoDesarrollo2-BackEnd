@@ -7,7 +7,7 @@ on:
 
 jobs:
   download_docker_images:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
@@ -20,7 +20,7 @@ jobs:
 
   deploy_to_cluster:
     name: Deploy to cluster
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: download_docker_images
     steps:
       - name: Configure kubectl

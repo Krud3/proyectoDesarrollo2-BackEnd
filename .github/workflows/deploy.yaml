@@ -6,9 +6,10 @@ on:
       - main
 
 
+
 jobs:
   deploy:
-    name: deploy to cluster
+    name: Deploy to cluster
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

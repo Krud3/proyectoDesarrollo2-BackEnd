@@ -17,8 +17,15 @@ jobs:
         with:
           kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
 
-      - name: Change kubectl context to minikube
-        run: kubectl config use-context minikube
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.11.0
+        with:
+          minikube_version: 'v1.33.0'
+          kubernetes_version: 'v1.30.0'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Interact with the cluster
+        run: kubectl get nodes
 
       - name: Deploy to Kubernetes
         run: |

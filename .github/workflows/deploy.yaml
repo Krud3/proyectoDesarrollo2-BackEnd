@@ -1,7 +1,7 @@
 name: CD
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -10,35 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v1
-      with:
-        version: v1.21.0
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: v1.21.0
 
-    - name: Authenticate to cluster
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      run: |
-        mkdir -p $HOME/.kube
-        echo "$KUBE_CONFIG_DATA" | base64 --decode > $HOME/.kube/config
+      - name: Authenticate to cluster
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        run: |
+          echo "$KUBE_CONFIG_DATA" | base64 --decode > $HOME/.kube/config
 
-    - name: Apply ConfigMap
-      run: kubectl apply -f .github/manifests/configmap.yaml
-      
-
-    - name: Apply DB Deployment
-      run: kubectl apply -f .github/manifests/db-deployment.yaml
-       
-    - name: Apply Web Deployment
-      run: kubectl apply -f .github/manifests/web-deployment.yaml
-
-    - name: Apply Web Service
-      run: kubectl apply -f .github/manifests/web-service.yaml
-
-    - name: Verify Deployment
-      run: |
-        kubectl rollout status deployment/web-deployment
-        kubectl get services
+      - name: Apply manifests
+        run: |
+          kubectl apply -f .github/manifests/db-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/web-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/configmap.yaml -n backend
+          kubectl apply -f .github/manifests/web-service.yaml -n backend

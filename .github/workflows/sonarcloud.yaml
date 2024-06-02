@@ -57,6 +57,15 @@ jobs:
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
 
+      - name: Apply DB Deployment
+        run: kubectl apply -f db-deployment.yaml
+
+      - name: Apply Web Deployment
+        run: kubectl apply -f web-deployment.yaml
+
+      - name: Apply Web Service
+        run: kubectl apply -f web-service.yaml
+
       - name: Verify deployment
         uses: steebchen/kubectl@v2.0.0
         env:

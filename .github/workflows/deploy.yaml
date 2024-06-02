@@ -7,15 +7,22 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Create kubeconfig
-      run: |
-        mkdir ${HOME}/.kube
-        echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
-        cat ${HOME}/.kube/config
-    - name: Deploy to K8s
-      run: kubectl apply -f web-service -n backend
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl create namespace backend
+          kubectl label namespace backend istio-injection=enabled
+          kubectl apply -f db-deployment.yaml -n backend
+          kubectl apply -f web-deployment.yaml -n backend
+          kubectl apply -f configmap.yaml -n backend
+          kubectl apply -f web-service.yaml -n backend
+          kubectl get all -n backend

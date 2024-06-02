@@ -28,6 +28,7 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
+          kubectl get nodes
           kubectl create namespace backend || true
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend

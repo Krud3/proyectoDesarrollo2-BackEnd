@@ -32,4 +32,4 @@ jobs:
           KUBECTL_VERSION: "1.28"
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
-          command: -n prueba rollout status deployment/prueba-gha
+          command: -n prueba rollout status deployment/web-service

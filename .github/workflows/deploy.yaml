@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Configure kubectl
-        uses: ghostzero/kubectl@v1
+        uses: steebchen/kubectl@v2.0.0
         with:
           kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
 
@@ -27,6 +27,10 @@ jobs:
         run: kubectl get nodes
 
       - name: Deploy to Kubernetes
+        uses: steebchen/kubectl@v2.0.0
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBECTL_VERSION: "1.28"
         run: |
           kubectl get nodes
           kubectl create namespace backend || true

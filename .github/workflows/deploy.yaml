@@ -1,4 +1,4 @@
-name: Automatización de Kubernetes
+name: CD
 
 on:
   pull_request:
@@ -10,22 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout código
-      uses: actions/checkout@v2
-      
-    - name: Configurar Kubernetes
-      uses: azure/aks-set-context@v1
-      with:
-        creds: ${{ secrets.KUBE_CONFIG_DATA }}
-        cluster-name: my-cluster-name
-        resource-group: my-resource-group-name
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Aplicar cambios en Kubernetes
-      run: |
-        kubectl apply -f web-service.yaml -n backend
-        kubectl get all -n backend
-        kubectl get svc istio-ingressgateway -n istio-system
-        kubectl get namespaces
-        kubectl get all -n backend
-        kubectl get services -n backend
-        kubectl port-forward service/web-service 30130:3120 -n backend
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: v1.21.0
+
+      - name: Read kubeconfig_base64.txt
+        id: read_kubeconfig
+        run: |
+          KUBE_CONFIG_BASE64=$(cat kubeconfig_base64.txt)
+          echo "::set-output name=kubeconfig_base64::$KUBE_CONFIG_BASE64"
+
+      - name: Authenticate to cluster
+        env:
+          KUBE_CONFIG_DATA: ${{ steps.read_kubeconfig.outputs.kubeconfig_base64 }}
+        run: |
+          mkdir -p $HOME/.kube
+          echo $KUBE_CONFIG_DATA | base64 --decode > $HOME/.kube/config
+
+      - name: Apply manifests
+        run: |
+          kubectl apply -f .github/manifests/db-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/web-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/configmap.yaml -n backend
+          kubectl apply -f .github/manifests/web-service.yaml -n backend

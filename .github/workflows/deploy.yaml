@@ -15,8 +15,8 @@ jobs:
 
       - name: Pull Docker images
         run: |
-          docker pull ervincaravaliibarra/galeria-20:latest || exit 1
-          docker pull ervincaravaliibarra/bdgaleria-20:latest || exit 1
+          docker pull ervincaravaliibarra/galeria-20:latest || 
+          docker pull ervincaravaliibarra/bdgaleria-20:latest || 
 
   deploy_to_cluster:
     name: Deploy to cluster

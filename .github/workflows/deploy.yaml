@@ -46,7 +46,3 @@ jobs:
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
           kubectl get all -n backend
-
-      - name: Port-forward web-service
-        run: |
-          nohup kubectl port-forward service/web-service 30130:3120 -n backend &

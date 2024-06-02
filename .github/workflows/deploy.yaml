@@ -17,6 +17,9 @@ jobs:
         with:
           kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
 
+      - name: Change kubectl context to minikube
+        run: kubectl config use-context minikube
+
       - name: Deploy to Kubernetes
         run: |
           kubectl create namespace backend

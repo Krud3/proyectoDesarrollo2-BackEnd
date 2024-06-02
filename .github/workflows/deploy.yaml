@@ -5,8 +5,6 @@ on:
     branches:
       - main
 
-
-
 jobs:
   deploy:
     name: Deploy to cluster
@@ -28,4 +26,4 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
           KUBECTL_VERSION: "1.15"
         with:
-          args: "rollout status deployment/web-service -n backend"
+          args: "rollout status deployment/web -n backend"

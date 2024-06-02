@@ -5,27 +5,26 @@ on:
     branches:
       - main
 
+
 jobs:
   deploy:
+    name: deploy to cluster
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
-        with:
-          version: v1.21.0
-
-      - name: Authenticate to cluster
+      - name: Deploy to cluster
+        uses: ghostzero/kubectl@v1
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-       
+        with:
+          args: apply -f .github/manifests/db-deployment.yaml -f .github/manifests/web-deployment.yaml -f .github/manifests/configmap.yaml -f .github/manifests/web-service.yaml -n backend
 
-      - name: Apply manifests
-        run: |
-          kubectl apply -f .github/manifests/db-deployment.yaml -n backend
-          kubectl apply -f .github/manifests/web-deployment.yaml -n backend
-          kubectl apply -f .github/manifests/configmap.yaml -n backend
-          kubectl apply -f .github/manifests/web-service.yaml -n backend
+      - name: Verify deployment
+        uses: ghostzero/kubectl@v1
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBECTL_VERSION: "1.15"
+        with:
+          args: "rollout status deployment/web-service -n backend"

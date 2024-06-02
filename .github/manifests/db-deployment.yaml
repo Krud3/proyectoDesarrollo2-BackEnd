@@ -38,6 +38,13 @@ spec:
                 configMapKeyRef:
                   name: db-config
                   key: DB_PORT
+          resources: # Sección de recursos agregada
+            requests: # Recursos mínimos requeridos
+              memory: "128Mi" # 128 megabytes de memoria RAM
+              cpu: "500m"    # 500 milicpus (0.5 CPUs)
+            limits:   # Límites máximos permitidos
+              memory: "256Mi" # 256 megabytes de memoria RAM
+              cpu: "1"        # 1 CPU
 ---
 apiVersion: v1
 kind: Service

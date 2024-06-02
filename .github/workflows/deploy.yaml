@@ -15,8 +15,8 @@ jobs:
 
       - name: Pull Docker images
         run: |
-          docker pull ervincaravaliibarra/galeria-20:latest || exit 1
-          docker pull ervincaravaliibarra/bdgaleria-20:latest || exit 1
+          docker pull ervincaravaliibarra/galeria-20:latest
+          docker pull ervincaravaliibarra/bdgaleria-20:latest
 
   deploy_to_cluster:
     name: Deploy to cluster
@@ -30,12 +30,9 @@ jobs:
 
       - name: Set Kubernetes context
         run: |
-          kubectl config set-cluster minikube \
-            --server=https://172.22.27.150:8443 \
-            --certificate-authority="C:\Users\Ervin Caravali\.minikube\ca.crt" \
-            --embed-certs=true
+          kubectl config set-cluster minikube --server=https://172.22.27.150:8443 --certificate-authority=C:\Users\Ervin Caravali\.minikube\ca.crt --embed-certs=true
           kubectl config use-context minikube
-          
+
       - name: Deploy to Kubernetes
         run: |
           kubectl create namespace backend || true

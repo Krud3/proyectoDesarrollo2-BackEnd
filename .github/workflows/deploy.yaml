@@ -35,8 +35,8 @@ jobs:
 
       - name: Pull Docker images
         run: |
-          docker pull ervincaravaliibarra/galeria-20:latest
-          docker pull ervincaravaliibarra/bdgaleria-20:latest
+          docker pull ervincaravaliibarra/galeria-20
+          docker pull ervincaravaliibarra/bdgaleria-20
 
       - name: Deploy to Kubernetes
         run: |
@@ -45,4 +45,5 @@ jobs:
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
-          kubectl get all -n backend
+
+     

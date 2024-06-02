@@ -30,7 +30,6 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl create namespace backend
-          kubectl label namespace backend istio-injection=enabled
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/configmap.yaml -n backend

@@ -1,9 +1,9 @@
 name: Automatización de Kubernetes
 
 on:
-  push:
+  pull_request:
     branches:
-      - feature/ervin
+      - main
 
 jobs:
   deploy:

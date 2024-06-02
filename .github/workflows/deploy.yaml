@@ -1,38 +1,23 @@
-name: CD
+deploy_to_cluster:
+  name: Deploy to cluster
+  runs-on: ubuntu-latest
+  needs: download_docker_images
+  steps:
+    - name: Configure kubectl
+      uses: steebchen/kubectl@v2.0.0
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
 
-on:
-  pull_request:
-    branches:
-      - main
+    - name: Set Kubernetes context
+      run: |
+        kubectl config set-cluster minikube --server=https://172.22.27.150:8443 --certificate-authority=C:\Users\Ervin Caravali\.minikube\ca.crt --embed-certs=true
+        kubectl config use-context minikube
 
-jobs:
-  download_docker_images:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Pull Docker images
-        run: |
-          docker pull ervincaravaliibarra/galeria-20:latest
-          docker pull ervincaravaliibarra/bdgaleria-20:latest
-
-  deploy_to_cluster:
-    name: Deploy to cluster
-    runs-on: ubuntu-latest
-    needs: download_docker_images
-    steps:
-      - name: Configure kubectl
-        uses: steebchen/kubectl@v2.0.0
-        with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
-
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl create namespace backend || true
-          kubectl apply -f .github/manifests/configmap.yaml -n backend
-          kubectl apply -f .github/manifests/db-deployment.yaml -n backend
-          kubectl apply -f .github/manifests/web-deployment.yaml -n backend
-          kubectl apply -f .github/manifests/web-service.yaml -n backend
-          kubectl get all -n backend
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl create namespace backend || true
+        kubectl apply -f .github/manifests/configmap.yaml -n backend
+        kubectl apply -f .github/manifests/db-deployment.yaml -n backend
+        kubectl apply -f .github/manifests/web-deployment.yaml -n backend
+        kubectl apply -f .github/manifests/web-service.yaml -n backend
+        kubectl get all -n backend

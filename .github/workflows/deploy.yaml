@@ -1,7 +1,7 @@
-name: CD
+name: Desplegar en Kubernetes
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -10,30 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
-        with:
-          version: v1.21.0
+    - name: Configurar Kubernetes
+      run: |
+        # Leer el contenido codificado en base64 del archivo
+        KUBE_CONFIG_BASE64=$(cat kubeconfig_base64.txt)
+        # Crear el directorio .kube
+        mkdir -p $HOME/.kube
+        # Decodificar la cadena base64 y escribirla en el archivo de configuración de Kubernetes
+        echo "$KUBE_CONFIG_BASE64" | base64 -d > $HOME/.kube/config
+        # Establecer los permisos apropiados en el archivo de configuración
+        chmod 600 $HOME/.kube/config
 
-      - name: Read kubeconfig_base64.txt
-        id: read_kubeconfig
-        run: |
-          KUBE_CONFIG_BASE64=$(cat kubeconfig_base64.txt)
-          echo "::set-output name=kubeconfig_base64::$KUBE_CONFIG_BASE64"
-
-      - name: Authenticate to cluster
-        env:
-          KUBE_CONFIG_DATA: ${{ steps.read_kubeconfig.outputs.kubeconfig_base64 }}
-        run: |
-          mkdir -p $HOME/.kube
-          echo $KUBE_CONFIG_DATA | base64 --decode > $HOME/.kube/config
-
-      - name: Apply manifests
-        run: |
-          kubectl apply -f .github/manifests/db-deployment.yaml -n backend
-          kubectl apply -f .github/manifests/web-deployment.yaml -n backend
-          kubectl apply -f .github/manifests/configmap.yaml -n backend
-          kubectl apply -f .github/manifests/web-service.yaml -n backend
+    - name: Desplegar en Kubernetes
+      run: |
+        kubectl apply -f .github/manifests/db-deployment.yaml -n backend
+        kubectl apply -f .github/manifests/web-deployment.yaml -n backend
+        kubectl apply -f .github/manifests/configmap.yaml -n backend
+        kubectl apply -f .github/manifests/web-service.yaml -n backend

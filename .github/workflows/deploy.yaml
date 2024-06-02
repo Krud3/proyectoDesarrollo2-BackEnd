@@ -1,36 +1,32 @@
-name: Deploy to Kubernetes
+name: deploy
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
 jobs:
   deploy:
+    name: Deploy to Kubernetes
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v1
-      with:
-        version: v1.20.0  
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: v1.20.0  
 
-    - name: Configure kubectl
-      run: |
-        mkdir -p $HOME/.kube
-        echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+      - name: Apply DB ConfigMap
+        run: kubectl apply -f configmap.yaml
 
-    - name: Apply DB ConfigMap
-      run: kubectl apply -f configmap.yaml
+      - name: Apply DB Deployment
+        run: kubectl apply -f db-deployment.yaml
 
-    - name: Apply DB Deployment
-      run: kubectl apply -f db-deployment.yaml
+      - name: Apply Web Deployment
+        run: kubectl apply -f web-deployment.yaml
 
-    - name: Apply Web Deployment
-      run: kubectl apply -f web-deployment.yaml
-
-    - name: Apply Web Service
-      run: kubectl apply -f web-service.yaml
+      - name: Apply Web Service
+        run: kubectl apply -f web-service.yaml

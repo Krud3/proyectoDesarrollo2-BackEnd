@@ -1,7 +1,7 @@
-name: Desplegar en Kubernetes
+name: Deploy to Kubernetes
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -13,18 +13,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Configurar Kubernetes
+    - name: Configure Kubernetes
+      env:
+        KUBE_CONFIG_BASE64: ${{ secrets.KUBE_CONFIG_BASE64 }}
       run: |
-        # Leer el contenido codificado en base64 del archivo
-        KUBE_CONFIG_BASE64=$(cat kubeconfig_base64.txt)
-        # Crear el directorio .kube
-        mkdir -p $HOME/.kube
-        # Decodificar la cadena base64 y escribirla en el archivo de configuración de Kubernetes
         echo "$KUBE_CONFIG_BASE64" | base64 -d > $HOME/.kube/config
-        # Establecer los permisos apropiados en el archivo de configuración
         chmod 600 $HOME/.kube/config
 
-    - name: Desplegar en Kubernetes
+    - name: Deploy to Kubernetes
       run: |
         kubectl apply -f .github/manifests/db-deployment.yaml -n backend
         kubectl apply -f .github/manifests/web-deployment.yaml -n backend

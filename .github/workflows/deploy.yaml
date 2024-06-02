@@ -31,8 +31,8 @@ jobs:
         run: |
           kubectl create namespace backend
           kubectl label namespace backend istio-injection=enabled
-          kubectl apply -f db-deployment.yaml -n backend
-          kubectl apply -f web-deployment.yaml -n backend
-          kubectl apply -f configmap.yaml -n backend
-          kubectl apply -f web-service.yaml -n backend
+          kubectl apply -f .github/manifests/db-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/web-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/configmap.yaml -n backend
+          kubectl apply -f .github/manifests/web-service.yaml -n backend
           kubectl get all -n backend

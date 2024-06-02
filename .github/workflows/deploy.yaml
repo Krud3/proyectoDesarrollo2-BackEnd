@@ -7,21 +7,17 @@ on:
 
 jobs:
   deploy:
+    name: Deploy to Kubernetes
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Configure Kubernetes
+    - name: Create kubeconfig
       run: |
-        mkdir -p $HOME/.kube
-        cp kubeconfig.yaml $HOME/.kube/config
-        chmod 600 $HOME/.kube/config
-
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl apply -f .github/manifests/db-deployment.yaml -n backend
-        kubectl apply -f .github/manifests/web-deployment.yaml -n backend
-        kubectl apply -f .github/manifests/configmap.yaml -n backend
-        kubectl apply -f .github/manifests/web-service.yaml -n backend
+        mkdir ${HOME}/.kube
+        echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
+        cat ${HOME}/.kube/config
+    - name: Use context
+      run: kubectl config use-context octobay-api
+    - name: Deploy to K8s
+      run: kubectl apply -f web-service -n backend

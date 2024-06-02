@@ -1,20 +1,31 @@
-name: Push
+name: Automatización de Kubernetes
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - feature/ervin
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    - name: Checkout código
+      uses: actions/checkout@v2
       
-      - name: Create/Modify deployment
-        uses: gane5hvarma/kubectl-actions@master
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        with:
-          args: apply -f .github/manifests/db-deployment.yaml -f .github/manifests/web-deployment.yaml -f .github/manifests/configmap.yaml -f .github/manifests/web-service.yaml -n backend
+    - name: Configurar Kubernetes
+      uses: azure/aks-set-context@v1
+      with:
+        creds: ${{ secrets.KUBE_CONFIG_DATA }}
+        cluster-name: my-cluster-name
+        resource-group: my-resource-group-name
+
+    - name: Aplicar cambios en Kubernetes
+      run: |
+        kubectl apply -f web-service.yaml -n backend
+        kubectl get all -n backend
+        kubectl get svc istio-ingressgateway -n istio-system
+        kubectl get namespaces
+        kubectl get all -n backend
+        kubectl get services -n backend
+        kubectl port-forward service/web-service 30130:3120 -n backend

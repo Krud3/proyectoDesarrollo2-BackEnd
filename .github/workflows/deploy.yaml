@@ -22,39 +22,18 @@ jobs:
         with:
           minikube version: 'v1.33.0'
           kubernetes version: 'v1.30.0'
-          github token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Interact with the cluster
         run: kubectl get nodes
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl create namespace backend
+          kubectl create namespace backend || true
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/configmap.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
           kubectl get all -n backend
-
-      - name: Get events in backend namespace
-        run: kubectl get events -n backend
-
-      - name: Describe db deployment
-        run: kubectl describe deployment db -n backend
-
-      - name: Describe web deployment
-        run: kubectl describe deployment web -n backend
-
-      - name: Describe db pods
-        run: |
-          db_pods=$(kubectl get pods -n backend -l app=db -o jsonpath="{.items[*].metadata.name}")
-          for pod in $db_pods; do
-            kubectl describe pod $pod -n backend
-          done
-
-      - name: Describe web pods
-        run: |
-          web_pods=$(kubectl get pods -n backend -l app=web -o jsonpath="{.items[*].metadata.name}")
-          for pod in $web_pods; do
-            kubectl describe pod $pod -n backend
-          done
+          
+      - name: Port-forward web-service
+        run: kubectl port-forward service/web-service 30130:3120 -n backend

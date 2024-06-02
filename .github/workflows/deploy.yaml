@@ -45,5 +45,4 @@ jobs:
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
-
-     
+          kubectl get all -n backend

@@ -26,7 +26,7 @@ jobs:
 
     - name: Desplegar en Kubernetes
       run: |
-        kubectl apply -f .github/manifests/db-deployment.yaml -n backend
-        kubectl apply -f .github/manifests/web-deployment.yaml -n backend
-        kubectl apply -f .github/manifests/configmap.yaml -n backend
-        kubectl apply -f .github/manifests/web-service.yaml -n backend
+        kubectl apply -f .github/manifests/db-deployment.yaml 
+        kubectl apply -f .github/manifests/web-deployment.yaml 
+        kubectl apply -f .github/manifests/configmap.yaml 
+        kubectl apply -f .github/manifests/web-service.yaml 

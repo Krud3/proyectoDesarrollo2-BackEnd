@@ -22,6 +22,7 @@ jobs:
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
           minikube version: 'v1.33.1'
+          kubernetes version: 'v1.30.0'
 
       - name: Interact with the cluster
         run: kubectl get nodes

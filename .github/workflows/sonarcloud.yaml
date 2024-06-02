@@ -17,7 +17,7 @@ jobs:
         uses: docker/setup-qemu-action@v2
 
       - name: Build and run tests using Docker Compose
-        run: docker-compose -f docker-compose.yml up --build -d db web tests
+        run: docker-compose -f docker-compose.yaml up --build -d db web tests
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v3

@@ -5,7 +5,7 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    image: ervincaravaliibarra/galeria-6:latest
+    image: ervincaravaliibarra/galeria-20:latest
     restart: always
     command: sh -c "sleep 10 && python manage.py runserver 0.0.0.0:8000"
     ports:
@@ -28,7 +28,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.db
-    image: ervincaravaliibarra/bdgaleria-6:latest
+    image: ervincaravaliibarra/bdgaleria-20:latest
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -37,23 +37,6 @@ services:
       - "5433:5432"
     volumes:
       - db_data_volume:/var/lib/postgresql/data
-    networks:
-      - backend
-
-  pgadmin:
-    build:
-      context: .
-      dockerfile: Dockerfile.pgadmin
-    image: ervincaravaliibarra/pgadmin-galeria-6:latest
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - "90:80"
-    depends_on:
-      - db
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
     networks:
       - backend
 
@@ -76,7 +59,8 @@ services:
 
 volumes:
   db_data_volume:
-  pgadmin_data:
 
 networks:
   backend:
+
+

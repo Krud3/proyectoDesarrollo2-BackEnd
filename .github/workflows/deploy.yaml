@@ -32,7 +32,7 @@ jobs:
         run: |
           kubectl config set-cluster minikube \
             --server=https://172.22.27.150:8443 \
-            --certificate-authority="/mnt/c/Users/Ervin Caravali/.minikube/ca.crt" \
+            --certificate-authority="C:\Users\Ervin Caravali\.minikube\ca.crt" \
             --embed-certs=true
           kubectl config use-context minikube
 

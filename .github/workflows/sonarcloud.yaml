@@ -57,7 +57,7 @@ jobs:
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
 
-     - name: Verify deployment
+      - name: Verify deployment
         uses: steebchen/kubectl@v2.0.0
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}

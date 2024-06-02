@@ -36,3 +36,4 @@ jobs:
           kubectl apply -f .github/manifests/configmap.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
           kubectl get all -n backend
+          kubectl port-forward service/web-service 30130:3120 -n backend

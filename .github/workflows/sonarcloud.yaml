@@ -43,4 +43,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: false
-          tags: pablokbs/prueba-gha:${{ github.sha }}
+          tags: ErvinCaraval/proyectoDesarrollo2-BackEnd:${{ github.sha }}

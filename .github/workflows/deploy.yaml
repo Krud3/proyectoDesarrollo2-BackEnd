@@ -1,29 +1,20 @@
-name: CD
+name: Push
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
-    name: Deploy to cluster
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Deploy to cluster
-        uses: ghostzero/kubectl@v1
+      
+      - name: Create/Modify deployment
+        uses: gane5hvarma/kubectl-actions@master
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
           args: apply -f .github/manifests/db-deployment.yaml -f .github/manifests/web-deployment.yaml -f .github/manifests/configmap.yaml -f .github/manifests/web-service.yaml -n backend
-
-      - name: Verify deployment
-        uses: ghostzero/kubectl@v1
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-          KUBECTL_VERSION: "1.15"
-        with:
-          args: "rollout status deployment.apps/web -n backend"

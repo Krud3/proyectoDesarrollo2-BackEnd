@@ -6,23 +6,6 @@ on:
       - main
 
 jobs:
-   build_and_push:
-    needs: test-and-analyze
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Build and push images
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: |
-          docker-compose build
-          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          docker-compose push
-
   deploy:
     runs-on: ubuntu-latest
 
@@ -38,7 +21,7 @@ jobs:
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
-          minikube version: 'v1.33.1'
+          minikube version: 'v1.33.0'
           kubernetes version: 'v1.30.0'
 
       - name: Interact with the cluster

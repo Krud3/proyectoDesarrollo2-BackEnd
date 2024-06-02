@@ -30,7 +30,10 @@ jobs:
 
       - name: Set Kubernetes context
         run: |
-          kubectl config set-cluster minikube --server=https://172.22.27.150:8443 --certificate-authority=C:\Users\Ervin Caravali\.minikube\ca.crt --embed-certs=true
+          kubectl config set-cluster minikube \
+            --server=https://172.22.27.150:8443 \
+            --certificate-authority=$HOME/.minikube/ca.crt \
+            --embed-certs=true
           kubectl config use-context minikube
 
       - name: Deploy to Kubernetes

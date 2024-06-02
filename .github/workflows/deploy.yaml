@@ -1,4 +1,4 @@
-name: Deploy to Kubernetes
+name: CD
 
 on:
   pull_request:
@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -27,16 +28,14 @@ jobs:
         run: kubectl get nodes
 
       - name: Deploy to Kubernetes
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         run: |
-          kubectl get nodes
           kubectl create namespace backend || true
+          kubectl apply -f .github/manifests/configmap.yaml -n backend
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
-          kubectl apply -f .github/manifests/configmap.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
           kubectl get all -n backend
-          
+
       - name: Port-forward web-service
-        run: kubectl port-forward service/web-service 30130:3120 -n backend
+        run: |
+          nohup kubectl port-forward service/web-service 30130:3120 -n backend &

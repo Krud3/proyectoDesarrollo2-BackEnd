@@ -17,7 +17,7 @@ COPY requirements.txt /code/
 # Instala las dependencias del proyecto especificadas en requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expone el puerto 8000 para que pueda ser accesible desde fuera del contenedo
+# Expone el puerto 8000 para que pueda ser accesible desde fuera del contened
 EXPOSE 8000
 
 # Define el comando para arrancar la aplicaci

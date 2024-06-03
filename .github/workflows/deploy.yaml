@@ -9,8 +9,11 @@ jobs:
   deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
-    
+
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
@@ -19,18 +22,10 @@ jobs:
 
       - name: Start Minikube
         run: |
-          minikube delete
+          minikube delete || true
           minikube start --driver=docker
 
-      - name: Configure kubectl
-        uses: steebchen/kubectl@v2.0.0
-        with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup kubectl in Minikube
+      - name: Setup kubectl
         run: minikube kubectl -- get nodes
 
       - name: Login to Docker Hub
@@ -46,22 +41,31 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl create namespace backend 
+          kubectl create namespace backend || true
           kubectl apply -f .github/manifests/configmap.yaml -n backend
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
           
-          # Espera hasta que los despliegues estén listos
+          # Wait for deployments to be ready
           kubectl wait --for=condition=available deployment -n backend --timeout=300s --all
 
-          # Imprime un mensaje en la terminal
           echo "Kubernetes resources have been deployed successfully!"
 
-          # Espera 30 segundos antes de terminar
-          sleep 30
-
       - name: Get deployed resources
+        run: kubectl get all -n backend
+
+      - name: Verify deployments
         run: |
-          kubectl get all -n backend
-          kubectl port-forward svc/web 8000:8000 -n backend
+          kubectl describe deployments -n backend
+          kubectl logs deployment/web -n backend
+
+      - name: Port forward service
+        run: |
+          kubectl port-forward svc/web 8000:8000 -n backend &
+          sleep 10 # Give it some time to start port forwarding
+          echo "Port forwarding initiated. Access the service at localhost:8000"
+
+      - name: Verify service availability
+        run: |
+          curl --fail http://localhost:8000 || (echo "Service is not available on localhost:8000" && exit 1)

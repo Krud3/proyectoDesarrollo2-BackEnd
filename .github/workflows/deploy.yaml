@@ -15,7 +15,7 @@ jobs:
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
           minikube version: 'v1.33.0'
-          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usa
+          kubernetes version: 'v1.30.0'
 
       - name: Start Minikube
         run: |
@@ -51,9 +51,30 @@ jobs:
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
-          sleep 120 # Espera 120 segundos (2 minutos) para que los servicios se levanten completamente
+          
+          # Espera hasta que los despliegues estén listos
+          kubectl wait --for=condition=available deployment -n backend --timeout=300s --all
 
-      - name: Get deployed resources
+      - name: Verify deployment status
         run: |
+          echo "Verificando el estado de los recursos desplegados..."
           kubectl get all -n backend
+          kubectl describe pods -n backend
+
+      - name: Get logs of pods
+        run: |
+          echo "Obteniendo logs de los pods..."
+          for pod in $(kubectl get pods -n backend -o jsonpath="{.items[*].metadata.name}"); do
+            echo "Logs for pod: $pod"
+            kubectl logs $pod -n backend
+          done
+
+      - name: Wait before port-forward
+        run: |
+          echo "Esperando 30 segundos antes de hacer port-forward..."
+          sleep 30
+
+      - name: Port forward web-service
+        run: |
+          echo "Haciendo port-forward del servicio web..."
           kubectl port-forward svc/web-service 3120:3120 -n backend

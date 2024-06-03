@@ -9,7 +9,7 @@ jobs:
   deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.11.0
@@ -46,63 +46,16 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl create namespace backend
+          kubectl create namespace backend 
           kubectl apply -f .github/manifests/configmap.yaml -n backend
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
-
+          
           # Espera hasta que los despliegues estén listos
           kubectl wait --for=condition=available deployment -n backend --timeout=300s --all
 
-      - name: Verify deployment status
+      - name: Get deployed resources
         run: |
-          echo "Verificando el estado de los recursos desplegados..."
           kubectl get all -n backend
-          kubectl describe pods -n backend
-
-      - name: Get logs of pods
-        run: |
-          echo "Obteniendo logs de los pods..."
-          for pod in $(kubectl get pods -n backend -o jsonpath="{.items[*].metadata.name}"); do
-            echo "Logs for pod: $pod"
-            kubectl logs $pod -n backend
-          done
-
-      - name: Expose web-service
-        run: |
-          echo "Exponiendo el servicio web..."
-          kubectl expose deployment web-deployment --type=LoadBalancer --name=web-service -n backend
-
-      - name: Wait for external IP
-        run: |
-          echo "Esperando a que se asigne una IP externa..."
-          sleep 60
-          kubectl get svc web-service -n backend
-
-      - name: Start Minikube tunnel
-        run: |
-          echo "Iniciando tunnel de Minikube..."
-          nohup minikube tunnel &
-
-      - name: Wait for LoadBalancer IP
-        run: |
-          echo "Esperando a que se asigne una IP de LoadBalancer..."
-          for i in {1..10}; do
-            EXTERNAL_IP=$(kubectl get svc web-service -n backend -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
-            if [ -n "$EXTERNAL_IP" ]; then
-              echo "IP externa obtenida: $EXTERNAL_IP"
-              break
-            fi
-            echo "Esperando 30 segundos más..."
-            sleep 30
-          done
-          if [ -z "$EXTERNAL_IP" ]; then
-            echo "No se pudo obtener una IP externa"
-            exit 1
-          fi
-
-      - name: Output LoadBalancer IP
-        run: |
-          EXTERNAL_IP=$(kubectl get svc web-service -n backend -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
-          echo "La aplicación está disponible en http://$EXTERNAL_IP:3120/auction_app/v1/api/"
+          kubectl port-forward service/web-service 30130:3120 -n backend

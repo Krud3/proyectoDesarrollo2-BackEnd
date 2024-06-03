@@ -90,9 +90,17 @@ jobs:
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
-      - name: Verify deployment
-        uses: steebchen/kubectl@v2.0.0
-        with:
-          config: ${{ secrets.KUBE_CONFIG_DATA }}
-          run: kubectl port-forward service/web-service 30130:3120 -n backend
+      - name: Verify deployment - Port Forwarding
+        run: kubectl port-forward service/web-service 30130:3120 -n backend
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
+      - name: Get nodes
+        run: kubectl get nodes
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+      - name: Get pods
+        run: kubectl get pods -n backend
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}

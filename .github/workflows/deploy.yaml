@@ -14,11 +14,13 @@ jobs:
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
-          minikube version: 'v1.33.0'
-          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usar
+          minikube-version: 'v1.33.0'
+          kubernetes-version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usar
 
       - name: Start Minikube
-        run: minikube start --driver=docker
+        run: |
+          minikube delete
+          minikube start --driver=docker
 
       - name: Configure kubectl
         uses: steebchen/kubectl@v2.0.0

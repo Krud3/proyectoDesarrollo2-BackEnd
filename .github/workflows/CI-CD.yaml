@@ -54,3 +54,7 @@ jobs:
           sleep 120 
 
 
+      - name: Get deployed resources
+        run: |
+             kubectl get all -n backend
+ 

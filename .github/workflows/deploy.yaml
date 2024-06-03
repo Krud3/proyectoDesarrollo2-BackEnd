@@ -9,23 +9,28 @@ jobs:
   deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
           minikube version: 'v1.33.0'
-          kubernetes version: 'v1.30.0'
+          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usa
 
       - name: Start Minikube
         run: |
-          minikube delete || true
+          minikube delete
           minikube start --driver=docker
 
-      - name: Setup kubectl
+      - name: Configure kubectl
+        uses: steebchen/kubectl@v2.0.0
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup kubectl in Minikube
         run: minikube kubectl -- get nodes
 
       - name: Login to Docker Hub
@@ -41,39 +46,14 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl create namespace backend || true
+          kubectl create namespace backend 
           kubectl apply -f .github/manifests/configmap.yaml -n backend
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
-          
-          # Wait for deployments to be ready
-          kubectl wait --for=condition=available deployment -n backend --timeout=300s --all
-
-          echo "Kubernetes resources have been deployed successfully!"
+          sleep 120 # Espera 120 segundos (2 minutos) para que los servicios se levanten completamente
 
       - name: Get deployed resources
-        run: kubectl get all -n backend
-
-      - name: Verify deployments
         run: |
-          kubectl describe deployments -n backend
-          kubectl logs deployment/web -n backend
-
-      - name: Get pod logs
-        run: |
-          kubectl get pods -n backend
-          for pod in $(kubectl get pods -n backend -o jsonpath='{.items[*].metadata.name}'); do
-            echo "Logs for $pod:"
-            kubectl logs $pod -n backend
-          done
-
-      - name: Port forward service
-        run: |
-          kubectl port-forward svc/web 8000:8000 -n backend &
-          sleep 20 # Increased sleep time to ensure port forwarding is ready
-          echo "Port forwarding initiated. Access the service at localhost:8000"
-
-      - name: Verify service availability
-        run: |
-          curl --fail http://localhost:8000 || (echo "Service is not available on localhost:8000" && exit 1)
+          kubectl get all -n backend
+          kubectl port-forward svc/web-service 3120:3120 -n backend

@@ -1,4 +1,4 @@
-name: Deploy on Pull Request
+name: CD
 
 on:
   pull_request:
@@ -15,7 +15,7 @@ jobs:
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
           minikube version: 'v1.33.0'
-          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usa
+          kubernetes version: 'v1.30.0' 
 
       - name: Start Minikube
         run: |
@@ -44,6 +44,14 @@ jobs:
           docker pull ervincaravaliibarra/galeria-20
           docker pull ervincaravaliibarra/bdgaleria-20
 
+      - name: Create Docker registry secret in Kubernetes
+        run: |
+          kubectl create secret docker-registry regcred \
+            --docker-server=https://index.docker.io/v1/ \
+            --docker-username=${{ secrets.DOCKER_USERNAME }} \
+            --docker-password=${{ secrets.DOCKER_PASSWORD }} \
+            --namespace=backend
+
       - name: Deploy to Kubernetes
         run: |
           kubectl create namespace backend 
@@ -56,5 +64,4 @@ jobs:
       - name: Get deployed resources
         run: |
           kubectl get all -n backend
-          kubectl port-forward svc/web-service 3120:3120 -n backend
-
+          kubectl port-forward svc/web 3120:8000 -n backend

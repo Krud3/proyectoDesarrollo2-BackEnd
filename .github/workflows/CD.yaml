@@ -57,7 +57,7 @@ jobs:
       - name: Get deployed resources
         run: |
              
-             kubectl expose service/web-service --port=30130 --type=NodePort -n backend
+             kubectl expose Deploiment/web --port=8000 --type=NodePort -n backend
 
              
  	

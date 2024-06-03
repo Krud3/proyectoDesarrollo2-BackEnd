@@ -60,38 +60,39 @@ jobs:
         with:
           args: create namespace backend --dry-run=client -o yaml | kubectl apply -f -
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
 
       - name: Apply ConfigMap
         uses: steebchen/kubectl@v2.0.0
         with:
           args: apply -f .github/manifests/configmap.yaml -n backend
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
 
       - name: Apply database deployment
         uses: steebchen/kubectl@v2.0.0
         with:
           args: apply -f .github/manifests/db-deployment.yaml -n backend
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
 
       - name: Apply web deployment
         uses: steebchen/kubectl@v2.0.0
         with:
           args: apply -f .github/manifests/web-deployment.yaml -n backend
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
 
       - name: Apply web service
         uses: steebchen/kubectl@v2.0.0
         with:
           args: apply -f .github/manifests/web-service.yaml -n backend
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
 
       - name: Verify deployment
         uses: steebchen/kubectl@v2.0.0
         with:
-          config: ${{ secrets.KUBE_CONFIG_DATA }}
-          command: get service web-service -n backend
+          args: get service web-service -n backend
+        env:
+          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}

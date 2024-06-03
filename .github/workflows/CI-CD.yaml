@@ -15,7 +15,7 @@ jobs:
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
           minikube version: 'v1.33.0'
-          kubernetes version: 'v1.30.0'
+          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usar
 
       - name: Start Minikube
         run: |
@@ -51,11 +51,10 @@ jobs:
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
-          sleep 120
+          sleep 120 
 
-      - name: Start Ngrok tunnel
+
+      - name: Get deployed resources
         run: |
-          nohup ngrok http svc/web-service:3120 &>/dev/null &
-          sleep 5
-          ngrok_url=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-          echo "ngrok tunnel URL: $ngrok_url"
+             kubectl get all -n backend
+             

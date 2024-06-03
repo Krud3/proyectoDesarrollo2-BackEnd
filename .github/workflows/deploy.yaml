@@ -35,9 +35,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Pull Docker images
-        run: docker pull ervincaravaliibarra/galeria-20
-        run: docker pull ervincaravaliibarra/bdgaleria-20
-
+        run: |
+          docker pull ervincaravaliibarra/galeria-20 &&
+          docker pull ervincaravaliibarra/bdgaleria-20
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f .github/manifests -n backend

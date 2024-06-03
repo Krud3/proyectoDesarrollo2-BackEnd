@@ -46,11 +46,13 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl create namespace backend || true
+          kubectl create namespace backend 
           kubectl apply -f .github/manifests/configmap.yaml -n backend
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
+          sleep 120 # Espera 120 segundos (2 minutos) para que los servicios se levanten completamente
+
 
       - name: Get deployed resources
         run: kubectl get all -n backend

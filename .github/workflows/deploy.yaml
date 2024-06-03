@@ -14,7 +14,8 @@ jobs:
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
-          minikube version: latest  # Aquí proporciona la versión de Minikube que deseas usar
+          minikube version: 'v1.33.0'
+          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usar
 
       - name: Start Minikube
         run: minikube start --driver=docker
@@ -38,7 +39,7 @@ jobs:
 
       - name: Pull Docker images
         run: |
-          docker pull ervincaravaliibarra/galeria-20 &&
+          docker pull ervincaravaliibarra/galeria-20
           docker pull ervincaravaliibarra/bdgaleria-20
 
       - name: Deploy to Kubernetes

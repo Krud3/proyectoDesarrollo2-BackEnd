@@ -51,7 +51,7 @@ jobs:
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
-          sleep 120 # Espera 120 segundos (2 minutos) para que los servicios se levanten completamente
+          sleep 120 
 
 
       - name: Get deployed resources

@@ -54,7 +54,3 @@ jobs:
           sleep 120 
 
 
-      - name: Get deployed resources
-        run: |
-             kubectl get all -n backend
-             kubectl port-forward svc/web-service 30130:3120 -n backend

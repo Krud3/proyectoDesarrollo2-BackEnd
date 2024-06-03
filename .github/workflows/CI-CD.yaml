@@ -67,7 +67,7 @@ jobs:
       - name: Create namespace if not exists
         uses: steebchen/kubectl@v2.0.0
         with:
-          args: create namespace backend --dry-run=client -o yaml | kubectl apply -f -
+          args: create namespace backend 
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
 

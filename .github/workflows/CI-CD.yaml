@@ -55,32 +55,61 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Start Minikube
-        run: sudo minikube start --driver=docker
+      - name: Install Minikube
+        run: |
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
-      - name: Configure Kubernetes Context
-        run: kubectl config use-context minikube
+      - name: Start Minikube
+        run: |
+          minikube start --driver=docker
 
       - name: Create namespace if not exists
-        run: kubectl create namespace backend --dry-run=client -o yaml | kubectl apply -f -
+        uses: steebchen/kubectl@v2.0.0
+        with:
+          args: create namespace backend --dry-run=client -o yaml | kubectl apply -f -
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Apply ConfigMap
-        run: kubectl apply -f .github/manifests/configmap.yaml -n backend
+        uses: steebchen/kubectl@v2.0.0
+        with:
+          args: apply -f .github/manifests/configmap.yaml -n backend
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Apply database deployment
-        run: kubectl apply -f .github/manifests/db-deployment.yaml -n backend
+        uses: steebchen/kubectl@v2.0.0
+        with:
+          args: apply -f .github/manifests/db-deployment.yaml -n backend
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Apply web deployment
-        run: kubectl apply -f .github/manifests/web-deployment.yaml -n backend
+        uses: steebchen/kubectl@v2.0.0
+        with:
+          args: apply -f .github/manifests/web-deployment.yaml -n backend
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Apply web service
-        run: kubectl apply -f .github/manifests/web-service.yaml -n backend
+        uses: steebchen/kubectl@v2.0.0
+        with:
+          args: apply -f .github/manifests/web-service.yaml -n backend
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Verify deployment - Port Forwarding
         run: kubectl port-forward service/web-service 30130:3120 -n backend
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Get nodes
         run: kubectl get nodes
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Get pods
         run: kubectl get pods -n backend
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}

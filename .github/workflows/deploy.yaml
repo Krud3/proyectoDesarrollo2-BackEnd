@@ -15,7 +15,7 @@ jobs:
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
           minikube version: 'v1.33.0'
-          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usa
+          kubernetes version: 'v1.30.0'
 
       - name: Start Minikube
         run: |
@@ -51,10 +51,17 @@ jobs:
           kubectl apply -f .github/manifests/db-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-deployment.yaml -n backend
           kubectl apply -f .github/manifests/web-service.yaml -n backend
-          sleep 60 
+          
+          # Espera hasta que los despliegues estén listos
+          kubectl wait --for=condition=available deployment -n backend --timeout=300s --all
+
+          # Imprime un mensaje en la terminal
+          echo "Kubernetes resources have been deployed successfully!"
+
+          # Espera 30 segundos antes de terminar
+          sleep 30
 
       - name: Get deployed resources
         run: |
           kubectl get all -n backend
           kubectl port-forward svc/web-service 3120:3120 -n backend
-

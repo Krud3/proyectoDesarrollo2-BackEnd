@@ -15,7 +15,7 @@ jobs:
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
           minikube version: 'v1.33.0'
-          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usar
+          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usa
 
       - name: Start Minikube
         run: |

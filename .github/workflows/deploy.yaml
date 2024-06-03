@@ -60,10 +60,18 @@ jobs:
           kubectl describe deployments -n backend
           kubectl logs deployment/web -n backend
 
+      - name: Get pod logs
+        run: |
+          kubectl get pods -n backend
+          for pod in $(kubectl get pods -n backend -o jsonpath='{.items[*].metadata.name}'); do
+            echo "Logs for $pod:"
+            kubectl logs $pod -n backend
+          done
+
       - name: Port forward service
         run: |
           kubectl port-forward svc/web 8000:8000 -n backend &
-          sleep 10 # Give it some time to start port forwarding
+          sleep 20 # Increased sleep time to ensure port forwarding is ready
           echo "Port forwarding initiated. Access the service at localhost:8000"
 
       - name: Verify service availability

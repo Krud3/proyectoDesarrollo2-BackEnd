@@ -60,37 +60,39 @@ jobs:
         with:
           args: create namespace backend --dry-run=client -o yaml | kubectl apply -f -
         env:
-          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Apply ConfigMap
         uses: steebchen/kubectl@v2.0.0
         with:
           args: apply -f .github/manifests/configmap.yaml -n backend
         env:
-          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Apply database deployment
         uses: steebchen/kubectl@v2.0.0
         with:
           args: apply -f .github/manifests/db-deployment.yaml -n backend
         env:
-          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Apply web deployment
         uses: steebchen/kubectl@v2.0.0
         with:
           args: apply -f .github/manifests/web-deployment.yaml -n backend
         env:
-          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Apply web service
         uses: steebchen/kubectl@v2.0.0
         with:
           args: apply -f .github/manifests/web-service.yaml -n backend
         env:
-          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Verify deployment
-        run: kubectl port-forward service/web-service 30130:3120 -n backend
-        env:
-          KUBECONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        uses: steebchen/kubectl@v2.0.0
+        with:
+          config: ${{ secrets.KUBE_CONFIG_DATA }}
+          run: kubectl port-forward service/web-service 30130:3120 -n backend
+

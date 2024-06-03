@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED 1
 # Establece el directorio de trabajo en /cod
 WORKDIR /code
 
-# Copia todo el contenido del repositorio al directorio de trabajo del contenedor
+# Copia todo el contenido del repositorio al directorio de trabajo del contenedo
 COPY . /code/
 
 # Copia el archivo requirements.txt al directorio de trabajo

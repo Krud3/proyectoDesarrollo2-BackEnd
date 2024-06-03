@@ -99,7 +99,7 @@ jobs:
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
-      - name: Verify deployment - Port Forwarding
+      - name: Verify deployment - Create Port Forwarding
         run: kubectl port-forward service/web-service 30130:3120 -n backend
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}

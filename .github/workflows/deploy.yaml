@@ -45,7 +45,12 @@ jobs:
           docker pull ervincaravaliibarra/bdgaleria-20
 
       - name: Deploy to Kubernetes
-        run: kubectl apply -f .github/manifests -n backend
+        run: |
+          kubectl create namespace backend || true
+          kubectl apply -f .github/manifests/configmap.yaml -n backend
+          kubectl apply -f .github/manifests/db-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/web-deployment.yaml -n backend
+          kubectl apply -f .github/manifests/web-service.yaml -n backend
 
       - name: Get deployed resources
         run: kubectl get all -n backend

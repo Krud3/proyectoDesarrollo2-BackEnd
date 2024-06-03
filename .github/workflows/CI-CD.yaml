@@ -55,52 +55,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Start Minikube
+        run: sudo minikube start --driver=docker
+
+      - name: Configure Kubernetes Context
+        run: kubectl config use-context minikube
+
       - name: Create namespace if not exists
-        uses: steebchen/kubectl@v2.0.0
-        with:
-          args: create namespace backend --dry-run=client -o yaml | kubectl apply -f -
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: kubectl create namespace backend --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Apply ConfigMap
-        uses: steebchen/kubectl@v2.0.0
-        with:
-          args: apply -f .github/manifests/configmap.yaml -n backend
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: kubectl apply -f .github/manifests/configmap.yaml -n backend
 
       - name: Apply database deployment
-        uses: steebchen/kubectl@v2.0.0
-        with:
-          args: apply -f .github/manifests/db-deployment.yaml -n backend
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: kubectl apply -f .github/manifests/db-deployment.yaml -n backend
 
       - name: Apply web deployment
-        uses: steebchen/kubectl@v2.0.0
-        with:
-          args: apply -f .github/manifests/web-deployment.yaml -n backend
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: kubectl apply -f .github/manifests/web-deployment.yaml -n backend
 
       - name: Apply web service
-        uses: steebchen/kubectl@v2.0.0
-        with:
-          args: apply -f .github/manifests/web-service.yaml -n backend
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: kubectl apply -f .github/manifests/web-service.yaml -n backend
 
       - name: Verify deployment - Port Forwarding
         run: kubectl port-forward service/web-service 30130:3120 -n backend
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Get nodes
         run: kubectl get nodes
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: Get pods
         run: kubectl get pods -n backend
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}

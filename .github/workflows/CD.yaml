@@ -15,7 +15,7 @@ jobs:
         uses: manusa/actions-setup-minikube@v2.11.0
         with:
           minikube version: 'v1.33.0'
-          kubernetes version: 'v1.30.0' # Agrega esta línea con la versión de Kubernetes que deseas usar
+          kubernetes version: 'v1.30.0'
 
       - name: Start Minikube
         run: |
@@ -53,9 +53,14 @@ jobs:
           kubectl apply -f .github/manifests/web-service.yaml -n backend
           sleep 120 
 
-
       - name: Get deployed resources
         run: |
-             kubectl expose deployment web --port=30134 --target-port=8000 --type=NodePort -n backend
+          kubectl get all -n backend
 
-             
+      - name: Get NodePort
+        id: nodeport
+        run: echo "::set-output name=nodeport::$(kubectl get svc web-service -n backend -o jsonpath='{.spec.ports[0].nodePort}')"
+
+      - name: Print Service URL
+        run: |
+          echo "Service is accessible at: http://$(minikube ip):${{ steps.nodeport.outputs.nodeport }}"

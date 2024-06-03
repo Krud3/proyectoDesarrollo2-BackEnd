@@ -7,6 +7,6 @@ spec:
     app: web
   ports:
     - protocol: TCP
-      port: 3120
+      port: 80        # Puerto en el que estará expuesto externamente
       targetPort: 8000
-  type: LoadBalancer
+  type: NodePort     # Cambia el tipo de servicio a NodePort

@@ -56,4 +56,5 @@ jobs:
       - name: Get deployed resources
         run: |
           kubectl get all -n backend
-          minikube service web-service -n backend --url
+          kubectl port-forward svc/web-service 3120:3120 -n backend
+

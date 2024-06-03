@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.11.0
+        with:
+          minikube-version: latest  # Aquí proporciona la versión de Minikube que deseas usar
 
       - name: Start Minikube
         run: minikube start --driver=docker

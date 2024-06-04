@@ -6,3 +6,6 @@ WORKDIR /usr/src/app
 
 # Copiar el archivo .env al contenedor (si es necesario)
 COPY .env ./
+
+# Establecer permisos adecuados en el directorio de datos de PostgreSQL
+RUN chown -R postgres:postgres /var/lib/postgresql/data

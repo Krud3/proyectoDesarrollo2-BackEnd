@@ -55,4 +55,4 @@ jobs:
       - name: Get deployed resources
         run: |
           kubectl get all -n backend
-          kubectl port-forward service/web 8000:8000 -n backend
+         

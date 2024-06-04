@@ -20,5 +20,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Expone el puerto 8000 para que pueda ser accesible desde fuera del contened
 EXPOSE 8000
 
-# Define el comando para arrancar la aplicaci
+# Define el comando para arrancar la aplicac
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

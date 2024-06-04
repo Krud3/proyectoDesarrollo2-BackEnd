@@ -64,4 +64,4 @@ jobs:
       - name: Print Service URL
         run: |
           echo "Service is accessible at: http://$(minikube ip):${{ steps.nodeport.outputs.nodeport }}"
-          sleep 120 
+          

@@ -7,6 +7,7 @@ spec:
     app: web
   ports:
     - protocol: TCP
-      port: 3120        # Puerto en el que estará expuesto externamente
+      port: 8000        # Puerto en el que estará expuesto externamente
       targetPort: 8000
+      nodePort: 30080
   type: NodePort     # Cambia el tipo de servicio a NodePort

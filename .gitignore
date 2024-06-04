@@ -12,6 +12,6 @@ env/Include
 __pycache__/
 local_settings.py
 
-# Django Rest Framework
+# Django Rest Frameworks
 *.sqlite3
 *.pyc

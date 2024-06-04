@@ -1,6 +1,10 @@
 # Usar una versión específica de la imagen de PostgreSQL
 FROM postgres:16-alpine3.17
 
+# Crear un nuevo usuario no privilegiado para la aplicación
+RUN addgroup -S auctiongroup && adduser -S auctionuser -G auctiongroup
+
+
 # Establecer el directorio de trabajo
 WORKDIR /usr/src/app
 

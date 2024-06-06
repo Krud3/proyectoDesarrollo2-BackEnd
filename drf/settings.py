@@ -131,9 +131,10 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-CORS_ALLOWED_ORIGINS = [
-    "https://proyecto-desarrollo2-front-nz63sk4le-krud3s-projects.vercel.app/", 
-]
+CORS_ALLOWED_ALL_ORIGINS = True
+#[
+#    "https://proyecto-desarrollo2-front-nz63sk4le-krud3s-projects.vercel.app/", 
+#]
 
 
 
